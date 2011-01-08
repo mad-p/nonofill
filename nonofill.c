@@ -13,6 +13,7 @@ typedef struct mino {
 
 MINO nonominos[] = {
 #include "nonopat.h"
+  {0,0,0}
 };
 
 void print_answer(PAT *minos) {

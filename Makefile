@@ -1,9 +1,16 @@
+ANSWER = nonofill_answer.txt
 CFLAGS = -O -Wall -m64 --std=c99
+SRCS = *.pl *.c Makefile
+ZIP = nonofill.zip
 
-nonofill: nonofill.c nonopat.h
-
-nonofill_answer.txt: nonofill.txt nonoprint.pl
+$(ANSWER): nonofill.txt nonoprint.pl
 	perl nonoprint.pl nonofill.txt > $@
+
+$(ZIP): $(SRCS)
+	zip $@ $^
+
+nonofill: nonofill.o
+nonofill.o: nonofill.c nonopat.h
 
 nonofill.txt: nonofill
 	nonofill | tee nonofill.txt
