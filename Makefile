@@ -9,6 +9,7 @@ ZIP = nonofill.zip
 
 $(ANSWER): uniq.pl printed.txt
 	perl uniq.pl printed.txt > $@
+	head -1 $@
 
 printed.txt: nonofill.txt nonoprint.pl
 	perl nonoprint.pl nonofill.txt > $@
