@@ -18,8 +18,7 @@ nonofill.o: nonofill.c nonopat.h
 
 nonofill.txt: nonofill
 	nonofill | tee nonofill.txt
-	@echo -n "Found: "
-	@grep -v '#' nonofill.txt | wc -l
+	@echo "Found: " `grep -v '#' nonofill.txt | wc -l` " answers"
 
 nonopat.h: fliprotate.pl nonomino.h
 	perl fliprotate.pl
