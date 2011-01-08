@@ -10,7 +10,7 @@ ZIP = nonofill.zip
 $(ANSWER): nonofill.txt nonoprint.pl
 	perl nonoprint.pl nonofill.txt > $@
 
-$(ZIP): $(SRCS)
+$(ZIP): $(SRCS) $(ANSWER)
 	zip $@ $^
 
 nonofill: nonofill.o
