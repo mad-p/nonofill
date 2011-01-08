@@ -15,32 +15,46 @@ my @perm4 = qw(1234 1243 1324 1342 1423 1432
 sub unique {
   local ($/) = '';
   my $found = {};
+  my $uniq = {};
  BOARD:
   while (<>) {
-    my $b = Board->new($_);
+    my $b = Board->new($_)->normalize();
     next if $found->{$b->stringify()};
-    for my $perm (@perm4) {
-      my $new = $b->permute($perm);
-      for my $rot (1..4) {
-	$new = $new->rotate();
-	for my $flx (1..2) {
-	  $new = $new->flipx();
-	  for my $fl45 (1..2) {
-	    $new = $new->flip45();
-	    if ($found->{$new->stringify()}) {
-	      next BOARD;
-	    }
+    my $unique = 1;
+    for my $rot (1..4) {
+      my $new = $b->rotate();
+      for my $flx (1..2) {
+	$new = $new->flipx();
+	for my $fl45 (1..2) {
+	  $new = $new->flip45()->normalize();
+	  if ($uniq->{$new->stringify()}) {
+	    $unique = 0;
 	  }
+	  $found->{$new->stringify()} //= $new;
 	}
       }
     }
-    $found->{$b->stringify()} = $b;
+    if ($unique) {
+      $uniq->{$b->stringify()} = $b;
+    }
   }
-  say scalar(keys(%$found)), " answers";
 
-  for my $b (values %$found) {
-    say $b->stringify(), "\n";
+  output($found, "answers.txt");
+  output($uniq,  "unique_answers.txt");
+}
+
+sub output {
+  my ($boards, $file) = @_;
+  open my $out, ">", $file;
+  say {$out} scalar(keys(%$boards)), " answers";
+  my @b = values %$boards;
+  @b = (map { $_->[0] }
+	sort { $a->[1] cmp $b->[1] }
+	map { [$_, $_->stringify()] } @b);
+  for my $b (@b) {
+    say {$out} $b->stringify(), "\n";
   }
+  close $out;
 }
 
 sub main {
@@ -65,8 +79,13 @@ sub dup {
 }
 sub permute {
   my ($self, $pat) = @_;
+  unless (length($pat) == 4 &&
+	  $pat =~ /1/ && $pat =~ /2/ &&
+	  $pat =~ /3/ && $pat =~ /4/) {
+      die "trying to permute with $pat";
+  }
   my $str = $self->stringify();
-  eval "\$str =~ tr/1234/$pat/";
+  eval "\$str =~ tr/$pat/1234/";
   Board->new($str);
 }
 sub rotate {
@@ -98,6 +117,27 @@ sub flip45 {
     }
   }
   $new;
+}
+sub normalize {
+  my $self = shift;
+  my $tl = $self->[0][0];
+  my $tr = $self->[0][5];
+  my $bl = $self->[5][0];
+  my $br = $self->[5][5];
+  if ($tl == $bl) {
+      return $self->flip45()->normalize();
+  }
+  if ($tl == $tr) {
+    $tr = $self->[2][5];
+    $bl = $self->[3][0];
+  }
+  $self = $self->permute($tl . $tr . $br . $bl);
+  for my $l (@$self) {
+      if ($l !~ /^[14][14][14]/) {
+	  return $self;
+      }
+  }
+  return $self->flip45()->normalize();
 }
 
 package main;
