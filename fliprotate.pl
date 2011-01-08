@@ -1,3 +1,7 @@
+# Flip and rotate nonominos, excluding those larger than 6x6
+# Copyright (c) 2011 Kaoru Maeda
+# kaoru.maeda@gmail.com
+
 use 5.010;
 use strict;
 use warnings;

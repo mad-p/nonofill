@@ -1,3 +1,8 @@
+# Generate all 1285 nonominos
+
+# Copyright (c) 2011 Kaoru Maeda
+# kaoru.maeda@gmail.com
+
 use 5.010;
 use strict;
 use warnings;
@@ -36,13 +41,16 @@ sub generate {
     $found;
 }
 
+my @polyominos = ('', qw(monomino domino tromino tetromino pentomino
+ 			 hexomino heptomino octomino nonomino));
+
 sub minos {
     $| = 1;
     my $seed = Mino->new();
     $seed->[0] = Point->new(0,0);
     my $minos = { $seed->stringify() => $seed };
     for my $dim (1..8) {
-	say "Dimension: $dim";
+	say "Generating ", $polyominos[$dim+1];
 	$minos = generate($dim, $minos);
     }
     open my $i, ">", "nonomino.h";

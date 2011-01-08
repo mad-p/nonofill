@@ -1,3 +1,10 @@
+/*
+ * Fill 6x6 board with four of the same nonomino
+ *
+ * Copyright (c) 2011 Kaoru Maeda
+ * kaoru.maeda@gmail.com
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 

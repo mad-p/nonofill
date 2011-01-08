@@ -1,3 +1,7 @@
+# Makefile for nonofill
+# Copyright (c) 2011 Kaoru Maeda
+# kaoru.maeda@gmail.com
+
 ANSWER = nonofill_answer.txt
 CFLAGS = -O -Wall -m64 --std=c99
 SRCS = *.pl *.c Makefile
@@ -14,6 +18,8 @@ nonofill.o: nonofill.c nonopat.h
 
 nonofill.txt: nonofill
 	nonofill | tee nonofill.txt
+	@echo -n "Found: "
+	@grep -v '#' nonofill.txt | wc -l
 
 nonopat.h: fliprotate.pl nonomino.h
 	perl fliprotate.pl

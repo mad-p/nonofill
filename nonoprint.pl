@@ -1,3 +1,8 @@
+# Print nonofill.txt as human readable graphics
+
+# Copyright (c) 2011 Kaoru Maeda
+# kaoru.maeda@gmail.com
+
 use 5.010;
 use strict;
 use warnings;
