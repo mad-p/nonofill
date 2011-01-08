@@ -7,7 +7,10 @@ CFLAGS = -O -Wall -m64 --std=c99
 SRCS = *.pl *.c Makefile
 ZIP = nonofill.zip
 
-$(ANSWER): nonofill.txt nonoprint.pl
+$(ANSWER): uniq.pl printed.txt
+	perl uniq.pl printed.txt > $@
+
+printed.txt: nonofill.txt nonoprint.pl
 	perl nonoprint.pl nonofill.txt > $@
 
 $(ZIP): $(SRCS) $(ANSWER)
@@ -17,8 +20,7 @@ nonofill: nonofill.o
 nonofill.o: nonofill.c nonopat.h
 
 nonofill.txt: nonofill
-	nonofill | tee nonofill.txt
-	@echo "Found: " `grep -v '#' nonofill.txt | wc -l` " answers"
+	nonofill > nonofill.txt
 
 nonopat.h: fliprotate.pl nonomino.h
 	perl fliprotate.pl
