@@ -21,6 +21,8 @@ sub main {
 
 sub fill {
   my ($board, $pat, $char) = @_;
+  $pat =~ s/^0x//;
+  $pat =~ s/ull$//;
   my @hx = $pat =~ /(..)/g;
   shift @hx; pop @hx;
   @hx = map { unpack('B8', pack('H2', $_)) } @hx;

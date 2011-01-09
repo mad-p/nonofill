@@ -34,6 +34,10 @@ sub fliprot {
     my ($minx, $miny, $maxx, $maxy) = $m->bbox();
     my $width  = $maxx - $minx + 1;
     my $height = $maxy - $miny + 1;
+    for my $p (@$m) {
+	$p->[0] -= $minx;
+	$p->[1] -= $miny;
+    }
     say {$out} "{ ", $m->binarify(), ", $width, $height },";
   }
   say {$out} "{0,0,0},\n";

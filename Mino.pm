@@ -1,3 +1,7 @@
+use 5.010;
+use strict;
+use warnings;
+
 package Point;
 sub new {
   my $class = shift;
@@ -76,7 +80,7 @@ sub includes {
 sub rotate {
   my $self = shift->dup();
   for my $i (0..$#$self) {
-    @{$self->[$i]} = (-$self->[$i][1], $self->[$i][0]);
+    @{$self->[$i]} = (5-$self->[$i][1], $self->[$i][0]);
   }
   $self;
 }
@@ -84,7 +88,7 @@ sub rotate {
 sub flipx {
   my $self = shift->dup();
   for my $i (0..$#$self) {
-    @{$self->[$i]} = (-$self->[$i][0], $self->[$i][1]);
+    @{$self->[$i]} = (5-$self->[$i][0], $self->[$i][1]);
   }
   $self;
 }
@@ -118,11 +122,47 @@ sub parse {
 
 sub binarify {
   my $self = shift;
-  my @str = split(/\n/, $self->print());
-  @str = map { tr/_x/01/; sprintf("%02x", eval "0b" . substr("0" . $_ . "000000000", 0, 8)) } @str;
-  @str = (@str, ("00")x6);
-  splice(@str, 6);
-  join('', "0x00", @str, "00ull");
+  my ($minx, $miny, $maxx, $maxy) = $self->bbox();
+  if ($minx < 0 || $miny < 0 || $maxx > 5 || $maxy > 5) {
+    die "binarify out of range";
+  }
+  my @hx = ("00000000") x 6;
+  for my $p (@$self) {
+    substr($hx[$p->[1]], $p->[0]+1, 1) = '1';
+  }
+  join('', "0x00", (map { unpack('H2', pack('B8', $_)) } @hx), "00ull");
 }
+
+sub parse_binary {
+  my ($self, $str) = @_;
+  $str =~ s/^0x//;
+  $str =~ s/ull$//;
+  my @hx = $str =~ /(..)/g;
+  shift @hx; pop @hx;
+  @hx = map { unpack('B8', pack('H2', $_)) } @hx;
+  my $i = 0;
+  for my $y (0..5) {
+    for my $x (0..5) {
+      if (substr($hx[$y], $x+1, 1) eq '1') {
+	$self->[$i++] = Point->new($x, $y);
+      }
+    }
+  }
+  $self;
+}
+
+sub test {
+  my $pat = '0x0000000c04047c00ull';
+  my $m = Mino->new();
+  $m->parse_binary($pat);
+  say $m->print();
+  say $m->binarify();
+  say $pat eq $m->binarify() ? "Ok 1" : "NG 1";
+  my $r = $m->rotate();
+  say $r->print();
+  say $r->binarify();
+}
+
+test() unless caller;
 
 1;
