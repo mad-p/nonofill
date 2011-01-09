@@ -1,4 +1,4 @@
-# Print nonofill.txt as human readable graphics
+# Print as human readable graphics
 
 # Copyright (c) 2011 Kaoru Maeda
 # kaoru.maeda@gmail.com

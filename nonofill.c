@@ -7,10 +7,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef unsigned long long PAT;
 #define BOARD 0xff818181818181ffull
 #define SIZE 6
+#define MAX_ANSWER 100
 
 typedef struct mino {
   PAT pat;
@@ -23,16 +25,39 @@ MINO nonominos[] = {
   {0,0,0}
 };
 
-void print_answer(PAT *minos) {
-  PAT all = minos[0]| minos[1]| minos[2]| minos[3];
-  printf("%016llx %016llx %016llx %016llx %d\n", minos[0], minos[1], minos[2], minos[3],
-	 all == (0xffffffffffffffffull & ~BOARD));
+PAT answers[MAX_ANSWER][4];
+int nanswers = 0;
+
+int comp(const PAT *a, const PAT *b) {
+  if (*a < *b) return -1;
+  if (*a > *b) return 1;
+  return 0;
+}
+
+void print_answer(const PAT *minos) {
+  // remove permutation redundancy and print
+  PAT sorted[4];
+  memcpy(sorted, minos, sizeof(sorted));
+  heapsort(sorted, 4, sizeof(sorted[0]), (int(*)(const void*,const void*))comp);
+
+  for (int i=0; i<nanswers; i++) {
+    if (memcmp(answers[i], sorted, sizeof(sorted)) == 0) {
+      return;
+    }
+  }
+  // ok, it's new
+  memcpy(answers[nanswers], sorted, sizeof(sorted));
+  printf("%016llx %016llx %016llx %016llx\n", sorted[0], sorted[1], sorted[2], sorted[3]);
+  if (++nanswers >= MAX_ANSWER) {
+    fprintf(stderr, "Too many answers found\n");
+    exit(1);
+  }
   fflush(stdout);
 }
 
-void try(const MINO *begin, const MINO *end, int vshift, int hshift, PAT *minos, int depth) {
-  /* got one answer */
+void try(const MINO *begin, const MINO *end, PAT *minos, int depth) {
   if (depth == 4) {
+    // got an answer
     print_answer(minos);
     return;
   }
@@ -43,17 +68,16 @@ void try(const MINO *begin, const MINO *end, int vshift, int hshift, PAT *minos,
   }
 
   for (const MINO *p = begin; p < end; p++) {
-    int start_vs = p == begin ? vshift : 0;
-    for (int vs = start_vs; vs <= SIZE - p->height; vs++) {
-      int start_hs = p == begin && vs == vshift ? hshift : 0;
-      for (int hs = start_hs; hs <= SIZE - p->width; hs++) {
-	PAT current = p->pat >> (8 * vs + hs);
-	// printf("pat = %016llx; vs=%d; hs=%d; current = %016llx\n", p->pat, vs, hs, current);
+    for (int v = 0; v <= SIZE - p->height; v++) {
+      for (int h = 0; h <= SIZE - p->width; h++) {
+	// vertical   translation == 8 bit right shift
+	// holizontal translation == 1 bit right shift
+	PAT current = p->pat >> (8 * v + h);
 	if ((fixed & current) == 0) {
-	  /* can put here */
+	  // can put here
 	  minos[depth] = current;
-	  /* recurse one level */
-	  try(p, end, vs, hs, minos, depth + 1);
+	  // recurse one level
+	  try(p, end, minos, depth + 1);
 	}
       }
     }
@@ -65,14 +89,21 @@ void try_mino() {
   const MINO *begin = nonominos;
 
   while (begin->pat) {
-    printf("# try %d\n", ++no);
-    fflush(stdout);
+    nanswers = 0;
+
     const MINO *end = begin;
     while (end->pat) end++;
     PAT minos[4];
-    try(begin, end, 0, 0, minos, 0);
+    try(begin, end, minos, 0);
+
+    no++;
+    if (nanswers > 0) {
+      fprintf(stderr, "# nonomino %d : %d\n", no, nanswers);
+      fflush(stderr);
+      fprintf(stdout, "# nonomino %d : %d\n", no, nanswers);
+      fflush(stdout);
+    }
     begin = end + 1;
-    /*exit(0);*/
   }
 }
 
