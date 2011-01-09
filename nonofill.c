@@ -12,7 +12,7 @@
 typedef unsigned long long PAT;
 #define BOARD 0xff818181818181ffull
 #define SIZE 6
-#define MAX_ANSWER 100
+#define MAX_SOLUTION 100
 
 typedef struct mino {
   PAT pat;
@@ -25,8 +25,8 @@ MINO nonominos[] = {
   {0,0,0}
 };
 
-PAT answers[MAX_ANSWER][4];
-int nanswers = 0;
+PAT solutions[MAX_SOLUTION][4];
+int nsolutions = 0;
 
 int comp(const PAT *a, const PAT *b) {
   if (*a < *b) return -1;
@@ -34,22 +34,22 @@ int comp(const PAT *a, const PAT *b) {
   return 0;
 }
 
-void print_answer(const PAT *minos) {
+void print_solution(const PAT *minos) {
   // remove permutation redundancy and print
   PAT sorted[4];
   memcpy(sorted, minos, sizeof(sorted));
   heapsort(sorted, 4, sizeof(sorted[0]), (int(*)(const void*,const void*))comp);
 
-  for (int i=0; i<nanswers; i++) {
-    if (memcmp(answers[i], sorted, sizeof(sorted)) == 0) {
+  for (int i=0; i<nsolutions; i++) {
+    if (memcmp(solutions[i], sorted, sizeof(sorted)) == 0) {
       return;
     }
   }
   // ok, it's new
-  memcpy(answers[nanswers], sorted, sizeof(sorted));
+  memcpy(solutions[nsolutions], sorted, sizeof(sorted));
   printf("%016llx %016llx %016llx %016llx\n", sorted[0], sorted[1], sorted[2], sorted[3]);
-  if (++nanswers >= MAX_ANSWER) {
-    fprintf(stderr, "Too many answers found\n");
+  if (++nsolutions >= MAX_SOLUTION) {
+    fprintf(stderr, "Too many solutions found\n");
     exit(1);
   }
   fflush(stdout);
@@ -57,8 +57,8 @@ void print_answer(const PAT *minos) {
 
 void try(const MINO *begin, const MINO *end, PAT *minos, int depth) {
   if (depth == 4) {
-    // got an answer
-    print_answer(minos);
+    // got an solution
+    print_solution(minos);
     return;
   }
 
@@ -89,7 +89,7 @@ void try_mino() {
   const MINO *begin = nonominos;
 
   while (begin->pat) {
-    nanswers = 0;
+    nsolutions = 0;
 
     const MINO *end = begin;
     while (end->pat) end++;
@@ -97,10 +97,10 @@ void try_mino() {
     try(begin, end, minos, 0);
 
     no++;
-    if (nanswers > 0) {
-      fprintf(stderr, "# nonomino %d : %d\n", no, nanswers);
+    if (nsolutions > 0) {
+      fprintf(stderr, "# nonomino %d : %d\n", no, nsolutions);
       fflush(stderr);
-      fprintf(stdout, "# nonomino %d : %d\n", no, nanswers);
+      fprintf(stdout, "# nonomino %d : %d\n", no, nsolutions);
       fflush(stdout);
     }
     begin = end + 1;

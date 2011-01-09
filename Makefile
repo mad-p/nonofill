@@ -2,24 +2,24 @@
 # Copyright (c) 2011 Kaoru Maeda
 # kaoru.maeda@gmail.com
 
-ANSWERS = answers.txt unique_answers.txt
+SOLUTIONS = solutions.txt unique_solutions.txt
 CFLAGS = -O -Wall -m64 --std=c99
 SRCS = *.pl *.pm *.c Makefile
 ZIP = nonofill.zip
 
-all: $(ANSWERS)
+all: $(SOLUTIONS)
 zip: $(ZIP)
 
-answers.txt: nonofill.txt nonoprint.pl
+solutions.txt: nonofill.txt nonoprint.pl
 	perl nonoprint.pl nonofill.txt > $@
 
-unique_answers.txt: uniq.txt nonoprint.pl
+unique_solutions.txt: uniq.txt nonoprint.pl
 	perl nonoprint.pl uniq.txt > $@
 
 uniq.txt: nonofill.txt uniq.pl Mino.pm
 	perl uniq.pl nonofill.txt > $@
 
-$(ZIP): $(SRCS) $(ANSWERS)
+$(ZIP): $(SRCS) $(SOLUTIONS)
 	zip $@ $^
 
 nonofill: nonofill.o

@@ -7,20 +7,47 @@ use 5.010;
 use strict;
 use warnings;
 
+use lib '.';
+use Mino;
+
 sub main {
   my $count = 0;
+  my $found = {};
   while (<>) {
-    next if /#/;
+    if (/#/) {
+      output($found);
+      $found = {};
+      next;
+    }
     my @pats = split(/ /, $_);
     my @board = ("______") x 6;
     for my $i (0..3) {
       fill(\@board, $pats[$i], $i+1);
     }
-    print join("\n", @board), "\n\n";
+    $found->{$_} = \@board;
     $count++;
   }
-  say $count, " answers";
-  say STDERR $count, " answers";
+  say "# total $count solutions";
+  say STDERR "# total $count solutions";
+}
+
+sub output {
+  my $found = shift;
+  my @pats = sort keys %$found;
+  my ($mino) = $pats[0] =~ /(\S+)/;
+  $mino = Mino->new()->parse_binary($mino);
+  my @mino = split(/\n/, $mino->print());
+
+  say "# ", scalar(@pats), " solutions with:";
+  for my $p (@mino) {
+    say "# $p";
+  }
+  say '';
+
+  for my $p (@pats) {
+    my $lines = $found->{$p};
+    print join("\n", @$lines), "\n\n";
+  }
 }
 
 sub fill {
