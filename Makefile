@@ -8,6 +8,7 @@ SRCS = *.pl *.pm *.c Makefile
 ZIP = nonofill.zip
 
 all: $(ANSWERS)
+zip: $(ZIP)
 
 answers.txt: nonofill.txt nonoprint.pl
 	perl nonoprint.pl nonofill.txt > $@
@@ -18,7 +19,7 @@ unique_answers.txt: uniq.txt nonoprint.pl
 uniq.txt: nonofill.txt uniq.pl Mino.pm
 	perl uniq.pl nonofill.txt > $@
 
-$(ZIP): $(SRCS) $(ANSWER)
+$(ZIP): $(SRCS) $(ANSWERS)
 	zip $@ $^
 
 nonofill: nonofill.o
