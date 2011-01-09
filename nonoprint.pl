@@ -8,6 +8,7 @@ use strict;
 use warnings;
 
 sub main {
+  my $count = 0;
   while (<>) {
     next if /#/;
     my @pats = split(/ /, $_);
@@ -16,7 +17,10 @@ sub main {
       fill(\@board, $pats[$i], $i+1);
     }
     print join("\n", @board), "\n\n";
+    $count++;
   }
+  say $count, " answers";
+  say STDERR $count, " answers";
 }
 
 sub fill {
