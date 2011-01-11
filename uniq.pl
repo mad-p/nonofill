@@ -8,7 +8,7 @@ use strict;
 use warnings;
 
 use lib '.';
-use Mino;
+use Omino;
 
 sub main {
   uniq();
@@ -23,7 +23,7 @@ sub uniq {
  SOLUTION:
   while (<>) {
     (print), next if /#/;
-    my @minos = map { Mino->new()->parse_binary($_) } /(\S+)/g;
+    my @minos = map { Omino->new()->parse_binary($_) } /(\S+)/g;
     my $str = stringify(@minos);
     if ($found->{$str}) {
       next SOLUTION;
@@ -35,15 +35,12 @@ sub uniq {
       @new = map { $_->rotate() } @new;
       for my $fx (1..2) {
 	@new = map { $_->flipx() } @new;
-	for my $f45 (1..2) {
-	  @new = map { $_->flip45() } @new;
-	  my $new = stringify(@new);
-	  if ($found->{$new}) {
-	    # print STDERR "Dup: $new from $_";
-	    next SOLUTION;
-	  }
-	  $new lt $repl and $repl = $new;
+	my $new = stringify(@new);
+	if ($found->{$new}) {
+	  # print STDERR "Dup: $new from $_";
+	  next SOLUTION;
 	}
+	$new lt $repl and $repl = $new;
       }
     }
 

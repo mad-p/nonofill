@@ -38,7 +38,7 @@ void print_solution(const PAT *minos) {
   // remove permutation redundancy and print
   PAT sorted[4];
   memcpy(sorted, minos, sizeof(sorted));
-  heapsort(sorted, 4, sizeof(sorted[0]), (int(*)(const void*,const void*))comp);
+  qsort(sorted, 4, sizeof(sorted[0]), (int(*)(const void*,const void*))comp);
 
   for (int i=0; i<nsolutions; i++) {
     if (memcmp(solutions[i], sorted, sizeof(sorted)) == 0) {

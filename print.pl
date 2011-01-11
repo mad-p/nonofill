@@ -8,7 +8,7 @@ use strict;
 use warnings;
 
 use lib '.';
-use Mino;
+use Omino;
 
 sub main {
   my $count = 0;
@@ -35,7 +35,7 @@ sub output {
   my $found = shift;
   my @pats = sort keys %$found;
   my ($mino) = $pats[0] =~ /(\S+)/;
-  $mino = Mino->new()->parse_binary($mino);
+  $mino = Omino->new()->parse_binary($mino);
   my @mino = split(/\n/, $mino->print());
 
   say "# ", scalar(@pats), " solutions with:";

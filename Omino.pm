@@ -27,7 +27,7 @@ sub parse {
   $self;
 }
 
-package Mino;
+package Omino;
 use List::Util qw(min max);
 
 sub new {
@@ -37,7 +37,7 @@ sub new {
 
 sub dup {
   my $self = shift;
-  my $new = Mino->new();
+  my $new = Omino->new();
   for my $i (0..$#$self) {
     $new->[$i] = $self->[$i]->dup();
   }
@@ -89,14 +89,6 @@ sub flipx {
   my $self = shift->dup();
   for my $i (0..$#$self) {
     @{$self->[$i]} = (5-$self->[$i][0], $self->[$i][1]);
-  }
-  $self;
-}
-
-sub flip45 {
-  my $self = shift->dup();
-  for my $i (0..$#$self) {
-    @{$self->[$i]} = ($self->[$i][1], $self->[$i][0]);
   }
   $self;
 }
@@ -153,7 +145,7 @@ sub parse_binary {
 
 sub test {
   my $pat = '0x0000000c04047c00ull';
-  my $m = Mino->new();
+  my $m = Omino->new();
   $m->parse_binary($pat);
   say $m->print();
   say $m->binarify();

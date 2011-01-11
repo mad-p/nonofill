@@ -7,7 +7,7 @@ use strict;
 use warnings;
 use lib '.';
 
-use Mino;
+use Omino;
 
 sub fliprot {
   my ($mino, $out, $no) = @_;
@@ -21,11 +21,8 @@ sub fliprot {
   for my $rot (1..4) {
     $test = $test->rotate();
     for my $flx (1..2) {
-      $test = $test->flipx();
-      for my $fl45 (1..2) {
-	$test = $test->flip45()->normalize();
-	$found->{$test->stringify()} //= $test;
-      }
+      $test = $test->flipx()->normalize();
+      $found->{$test->stringify()} //= $test;
     }
   }
 
@@ -35,8 +32,8 @@ sub fliprot {
     my $width  = $maxx - $minx + 1;
     my $height = $maxy - $miny + 1;
     for my $p (@$m) {
-	$p->[0] -= $minx;
-	$p->[1] -= $miny;
+      $p->[0] -= $minx;
+      $p->[1] -= $miny;
     }
     say {$out} "{ ", $m->binarify(), ", $width, $height },";
   }
@@ -49,7 +46,7 @@ sub filter {
   my $no = 0;
   while (<$in>) {
     chomp;
-    my $mino = Mino->new()->parse($_);
+    my $mino = Omino->new()->parse($_);
     ++$no;
     fliprot($mino, $out, $no);
   }
