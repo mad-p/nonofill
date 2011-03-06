@@ -2,7 +2,7 @@
 # Copyright (c) 2011 Kaoru Maeda
 # kaoru.maeda@gmail.com
 
-SOLUTIONS = solutions.txt unique_solutions.txt
+SOLUTIONS = solutions.txt unique_solutions.txt solutions_kei.txt unique_solutions_kei.txt
 CFLAGS = -O -Wall --std=c99
 SRCS = *.pl *.pm *.c Makefile
 ZIP = nonofill.zip
@@ -15,6 +15,9 @@ solutions.txt: nonofill.txt print.pl
 
 unique_solutions.txt: uniq.txt print.pl
 	perl print.pl uniq.txt > $@
+
+%_kei.txt: %.txt keisenize.pl
+	perl keisenize.pl $< > $@
 
 uniq.txt: nonofill.txt uniq.pl Omino.pm
 	perl uniq.pl nonofill.txt > $@
